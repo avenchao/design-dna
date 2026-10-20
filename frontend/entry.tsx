@@ -5,6 +5,7 @@ import {sharedResultId} from '../lib/client-runtime';
 import '../app/design.css';
 import '../app/v2.css';
 import '../app/master-results.css';
+import '../app/playful.css';
 
 function StandaloneApp() {
   const [id,setId]=useState(sharedResultId());
