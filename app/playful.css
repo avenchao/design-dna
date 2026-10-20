@@ -95,6 +95,26 @@
 .dna-app.theme-T8 .identity-motif>svg:first-child{box-shadow:none;background:none}
 .dna-app.theme-T8 .result-art-star{display:none}
 .dna-app.theme-T7 .master-chinese{font-family:inherit}
+.dna-app.has-result .share-studio{max-width:930px;min-height:calc(100svh - 84px);display:grid;grid-template-columns:380px 1fr;grid-template-areas:'card intro' 'card tools';grid-template-rows:1fr 1fr;gap:0 75px;padding:48px 0 55px;align-items:start}
+.share-intro{grid-area:intro;align-self:end;padding-bottom:27px;text-align:left}
+.share-sticker{position:relative;display:inline-block;background:#ffe65a;color:#252526;font-size:11px;font-weight:750;letter-spacing:.4px;padding:8px 14px;border-radius:6px;transform:rotate(-3deg)}
+.share-sticker>svg{position:absolute;width:23px;height:23px;right:-34px;top:1px;color:var(--result-ink)}
+.share-intro h1{font-size:70px;line-height:1.12;font-weight:850;letter-spacing:-3px;margin:25px 0 17px}
+.share-intro h1>span{position:relative;color:var(--result-accent);white-space:nowrap}
+.share-intro h1>span::after{content:'';position:absolute;bottom:-4px;left:2px;width:90%;height:5px;background:var(--result-accent);border-radius:50%;transform:rotate(-3deg)}
+.share-intro>p{font-size:14px;color:var(--result-muted);margin-top:21px}
+.share-card-presentation{position:relative;grid-area:card;align-self:center;width:100%;max-width:380px;margin:auto}
+.dna-app.has-result .share-studio .share-card-frame{display:block;width:100%;max-width:360px;padding:0;background:transparent;cursor:zoom-in;transition:box-shadow .2s}
+.share-tape{position:absolute;z-index:1;top:-8px;left:calc(50% - 46px);width:92px;height:23px;background:#ffe86bcc;border-radius:2px;transform:rotate(-7deg);pointer-events:none}
+.share-preview-hint{font-size:10px;text-align:center;color:var(--result-muted);margin-top:18px}
+.share-toolbox{grid-area:tools;text-align:left;padding-top:6px}
+.dna-app .share-studio .share-actions{display:grid;grid-template-columns:1fr;max-width:310px;gap:13px;margin:0}
+.dna-app.has-result .share-studio .share-actions>.button{font-size:13px!important;min-height:50px;border-radius:13px}
+.share-link-note{font-size:11px;color:var(--result-muted);margin-top:17px}
+.dna-app .share-studio .card-links{justify-content:flex-start;gap:26px;margin-top:20px}
+.dna-app .share-studio .disclaimer{font-size:9px;text-align:left;margin:22px 0 0;max-width:330px;line-height:1.8!important}
+@media(max-width:899px){.dna-app.has-result .share-studio{display:block;max-width:440px;padding:20px 0 calc(35px + env(safe-area-inset-bottom,0px));min-height:0}.share-intro{text-align:center;padding-bottom:28px}.share-intro h1{font-size:35px;letter-spacing:-1.3px;margin:19px 0 10px}.share-desktop-break{display:none}.share-intro>p{font-size:12px;margin-top:17px}.share-sticker{font-size:10px;padding:7px 12px}.share-sticker>svg{width:20px;height:20px;right:-29px}.share-toolbox{text-align:center;padding-top:24px}.dna-app .share-studio .share-actions{display:flex;max-width:none;justify-content:center;gap:12px}.dna-app.has-result .share-studio .share-actions>.button{font-size:12px!important;padding:12px 20px}.dna-app .share-studio .card-links{justify-content:center;margin-top:18px}.dna-app .share-studio .disclaimer{text-align:center;margin:20px auto 0}.share-link-note{font-size:10px;margin-top:16px}.share-card-presentation{max-width:345px}.dna-app.has-result .share-studio .share-card-frame{max-width:330px}.share-preview-hint{font-size:9px;margin-top:15px}}
+@media(max-width:374px){.share-intro h1{font-size:32px}.dna-app.has-result .share-studio .share-actions>.button{font-size:11px!important;padding:12px 14px}}
 @media(min-width:1440px){.dna-app .gate-stage,.dna-app .home-stage{padding-top:100px}.intro-art{top:47%}}
 @media(min-width:768px) and (max-width:1199px){.dna-app .gate-stage,.dna-app .home-stage{padding-right:50%;padding-left:36px;padding-top:58px;min-height:720px}.dna-app .gate-stage h1{font-size:47px}.dna-app .home-stage h1{font-size:57px}.intro-art{width:46%;height:430px;right:12px}.art-scribble{font-size:16px;top:0}.blob-yellow{width:80%;height:auto;aspect-ratio:1;left:10%;top:60px}.designer-mascot{bottom:40px}.mascot-caption{left:10%;bottom:20px}.art-arrow{right:0;bottom:10px}.dna-app .intro-benefits{gap:6px}.intro-benefits>span{font-size:10px;padding:6px 8px}}
 @media(max-width:767px){
