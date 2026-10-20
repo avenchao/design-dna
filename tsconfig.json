@@ -19,7 +19,7 @@
     ]
   },
   "include": [
-    "pages/**/*.tsx",
+    "frontend/**/*.tsx",
     "app/**/*.tsx",
     "lib/**/*.ts",
     "vite.pages.config.ts"
