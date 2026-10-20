@@ -1,0 +1,3 @@
+project_id = "design-dna"
+[functions.design-dna]
+verify_jwt = false
