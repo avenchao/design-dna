@@ -28,7 +28,7 @@ export function redirectToCanonical() {
 
 export function resultHref(id: string, legacy = false) {
   const route = `${legacy ? 'r' : 'result'}/${encodeURIComponent(id)}`;
-  return usesStaticRouting() ? `${homeHref()}#/${route}` : `/${route}`;
+  return `${homeHref()}${route}`;
 }
 
 export function resultUrl(id: string, legacy = false) {
@@ -36,9 +36,18 @@ export function resultUrl(id: string, legacy = false) {
 }
 
 export function sharedResultId() {
-  const route = usesStaticRouting() ? window.location.hash.replace(/^#/, '') : window.location.pathname;
-  return route.match(/^\/(?:result|r)\/([a-f0-9-]{36})\/?$/)?.[1] || '';
+  return currentRoute().match(/^\/(?:result|r)\/([a-f0-9-]{36})\/?$/)?.[1] || '';
 }
+
+export function currentRoute() {
+  const hash=window.location.hash.replace(/^#/,'');
+  if(/^\/(?:result|r|play|admin)(?:\/|$)/.test(hash))return hash;
+  const base=homeHref().replace(/\/$/,'');
+  return window.location.pathname.startsWith(base+'/')?window.location.pathname.slice(base.length):window.location.pathname;
+}
+export function accessTokenFromLocation(){return currentRoute().match(/^\/play\/([^/]+)\/?$/)?.[1]||'';}
+export function accessHref(token:string){return `${homeHref()}play/${encodeURIComponent(token)}`;}
+export function isAdminRoute(){return /^\/admin\/?$/.test(currentRoute());}
 
 export function requestApi(path: string, data?: unknown) {
   const base = meta('dna-api').replace(/\/$/, '') || '/api';

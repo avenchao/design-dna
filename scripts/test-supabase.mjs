@@ -1,13 +1,14 @@
 import fs from 'node:fs';import path from 'node:path';import ts from 'typescript';import {pathToFileURL} from 'node:url';import assert from 'node:assert/strict';import {PGlite} from '@electric-sql/pglite';
 const root='.sites-runtime/supabase-tests';
 for(const dir of ['_shared','design-dna'])fs.mkdirSync(`${root}/${dir}`,{recursive:true});fs.writeFileSync(`${root}/package.json`,'{"type":"module"}');
-for(const file of ['_shared/model','_shared/scoring','design-dna/handler']){
+for(const file of ['_shared/model','_shared/scoring','design-dna/handler','design-dna/access']){
  let source=fs.readFileSync(`supabase/functions/${file}.ts`,'utf8').replace(/\.ts(['"])/g,'.js$1');
  fs.writeFileSync(`${root}/${file}.js`,ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText);
 }
 fs.copyFileSync('lib/v2/frozen-content.json',`${root}/_shared/frozen-content.json`);
 const {createHandler}=await import(pathToFileURL(path.resolve(`${root}/design-dna/handler.js`)));
 const db=new PGlite();await db.exec('create role anon;create role authenticated;create role service_role;');await db.exec(fs.readFileSync('supabase/migrations/202610200001_design_dna.sql','utf8'));
+await db.exec(fs.readFileSync('supabase/migrations/202610220008_access_links.sql','utf8'));
 const sha=async s=>Buffer.from(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))).toString('hex');
 const code='DNA-AAAAAAAAAAAAAAAA',codeHash=await sha(code);await db.query('insert into dna_private.access_codes(hash,created_at) values($1,$2)',[codeHash,Date.now()]);
 const origin='https://avenchao.github.io',base='https://test.supabase.co/functions/v1/design-dna';

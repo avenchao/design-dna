@@ -12,7 +12,7 @@
     "build:pages": "vite build --config vite.pages.config.ts",
     "preview": "vite preview --config vite.pages.config.ts",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.functions.json",
-    "test": "node scripts/test-supabase.mjs",
+    "test": "node scripts/test-supabase.mjs && node scripts/test-access-tokens.mjs",
     "sync:model": "node scripts/sync-supabase-model.mjs"
   },
   "dependencies": {

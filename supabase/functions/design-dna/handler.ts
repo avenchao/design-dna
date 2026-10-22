@@ -1,10 +1,11 @@
 import {calculateV2} from '../_shared/scoring.ts';
 import {VERSION} from '../_shared/model.ts';
+import {accessTokenFormat,accessStatuses,newAccessToken,accessCsv} from './access.ts';
 
 type Payload=Record<string,unknown>;
 export type ApiReply={status:number;body:Record<string,unknown>};
 export type Rpc=(action:string,payload:Payload,ipHash:string|null)=>Promise<ApiReply>;
-const actions=new Set(['verify','start','status','progress','submit','events']);
+const actions=new Set(['verify','access','start','status','progress','submit','events']);
 const eventNames=new Set(['question_answered','question_back','share_card_generated','image_saved','share_link_created','retest_clicked']);
 const tokenFormat=/^[a-f0-9]{64}$/;
 const idFormat=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -12,7 +13,7 @@ const hash=async(value:string)=>Array.from(new Uint8Array(await crypto.subtle.di
 const randomToken=()=>Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b=>b.toString(16).padStart(2,'0')).join('');
 const validAnswers=(a:unknown,partial=false)=>Array.isArray(a)&&a.length===10&&a.every(v=>(partial&&v===null)||(Number.isInteger(v)&&v>=0&&v<=3));
 
-export function createHandler({rpc,origins,ipSalt}:{rpc:Rpc;origins:string[];ipSalt:string}) {
+export function createHandler({rpc,origins,ipSalt,adminKeyHash=''}:{rpc:Rpc;origins:string[];ipSalt:string;adminKeyHash?:string}) {
  return async(req:Request)=>{
   const origin=req.headers.get('origin');
   const cors:Record<string,string>={'Vary':'Origin','Access-Control-Allow-Methods':'GET, POST, OPTIONS','Access-Control-Allow-Headers':'content-type, authorization, apikey, x-client-info','Access-Control-Max-Age':'600'};
@@ -30,7 +31,12 @@ export function createHandler({rpc,origins,ipSalt}:{rpc:Rpc;origins:string[];ipS
     const response=await rpc('result',{id:match[1]},null);return json(response.body,response.status);
    }
    if(req.method!=='POST')return json({error:'请求方式无效。'},405);
-   if(!actions.has(route))return json({error:'找不到此接口。'},404);
+   const admin=route.startsWith('admin/');
+   if(!actions.has(route)&&!admin)return json({error:'找不到此接口。'},404);
+   if(admin){
+    const credential=req.headers.get('authorization')?.replace(/^Bearer /,'')||'';
+    if(!adminKeyHash||credential.length>256||await hash(credential)!==adminKeyHash)return json({error:'管理密钥无效。'},401);
+   }
    if(!req.headers.get('content-type')?.includes('application/json'))return json({error:'请求格式无效。'},415);
    if(Number(req.headers.get('content-length')||0)>8192)return json({error:'请求过大。'},413);
    const reader=req.body?.getReader();let size=0;const chunks:Uint8Array[]=[];
@@ -39,7 +45,30 @@ export function createHandler({rpc,origins,ipSalt}:{rpc:Rpc;origins:string[];ipS
    let raw:unknown;try{raw=JSON.parse(new TextDecoder().decode(bytes));}catch{return json({error:'请求格式无效。'},400);}
    if(!raw||typeof raw!=='object'||Array.isArray(raw))return json({error:'请求格式无效。'},400);
    const body=raw as Payload,payload:Payload={};let responseToken:string|undefined;
-   if(route==='verify'){
+   if(admin){
+    if(route==='admin/generate'){
+     if(![100,500,1000].includes(Number(body.count))||typeof body.count!=='number'||typeof body.batchId!=='string'||!idFormat.test(body.batchId))return json({error:'请选择100、500或1000个，并提供有效批次ID。'},400);
+     const tokens=new Set<string>();while(tokens.size<body.count)tokens.add(newAccessToken());
+     payload.items=await Promise.all([...tokens].map(async token=>({token,hash:await hash(token)})));payload.batchId=body.batchId;
+    }else if(route==='admin/set-status'){
+     if(typeof body.accessToken!=='string'||!accessTokenFormat.test(body.accessToken)||typeof body.disabled!=='boolean')return json({error:'Token或状态无效。'},400);
+     payload.accessToken=body.accessToken;payload.disabled=body.disabled;
+    }else if(route==='admin/list'||route==='admin/export'){
+     if(body.status!==undefined&&!accessStatuses.includes(String(body.status)))return json({error:'筛选状态无效。'},400);
+     if(body.page!==undefined&&(!Number.isInteger(body.page)||Number(body.page)<0||Number(body.page)>100000))return json({error:'页码无效。'},400);
+     if(body.batchId&& (typeof body.batchId!=='string'||!idFormat.test(body.batchId)))return json({error:'批次无效。'},400);
+     payload.status=body.status||'all';payload.page=body.page||0;payload.search=typeof body.search==='string'?body.search.trim().toUpperCase().slice(0,26):'';payload.batchId=body.batchId||'';
+    }else return json({error:'找不到此管理接口。'},404);
+    const response=await rpc(route.replace(/[/-]/g,'_'),payload,null);
+    if(route==='admin/export'&&response.status===200)return new Response(accessCsv(response.body.items as Record<string,unknown>[]),{headers:{...cors,'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="design-dna-access-links.csv"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
+    return json(response.body,response.status);
+   }
+   if(route==='access'){
+    const entry=typeof body.accessToken==='string'?body.accessToken.trim().toUpperCase():'';
+    if(!accessTokenFormat.test(entry))return json({error:'这个测试入口无效或已停用。'},401);
+    payload.codeHash=await hash(entry);responseToken=randomToken();payload.tokenHash=await hash(responseToken);
+    if(typeof body.resumeToken==='string'&&tokenFormat.test(body.resumeToken))payload.resumeHash=await hash(body.resumeToken);
+   }else if(route==='verify'){
     const code=typeof body.code==='string'?body.code.trim().toUpperCase():'';
     payload.codeHash=await hash(code);
     responseToken=randomToken();payload.tokenHash=await hash(responseToken);
@@ -48,7 +77,7 @@ export function createHandler({rpc,origins,ipSalt}:{rpc:Rpc;origins:string[];ipS
     if(typeof body.resultId!=='string'||!idFormat.test(body.resultId))return json({error:'事件无效。'},400);
     payload.resultId=body.resultId;
    } else {
-    if(typeof body.token!=='string'||!tokenFormat.test(body.token))return json({error:'请先验证测评密码。'},401);
+    if(typeof body.token!=='string'||!tokenFormat.test(body.token))return json({error:'请从有效的专属测试链接进入。'},401);
     payload.tokenHash=await hash(body.token);
    }
    if(route==='progress'||route==='submit'){
@@ -69,9 +98,9 @@ export function createHandler({rpc,origins,ipSalt}:{rpc:Rpc;origins:string[];ipS
     if(Number.isInteger(body.question)&&Number(body.question)>=0&&Number(body.question)<10)payload.question=body.question;
     if(Number.isInteger(body.answer)&&Number(body.answer)>=0&&Number(body.answer)<4)payload.answer=body.answer;
    }
-   const ip=route==='verify'?await hash(`${ipSalt}:${req.headers.get('x-forwarded-for')?.split(',')[0].trim()||'unknown'}`):null;
+   const ip=route==='verify'||route==='access'?await hash(`${ipSalt}:${req.headers.get('x-forwarded-for')?.split(',')[0].trim()||'unknown'}`):null;
    const response=await rpc(route,payload,ip);
-   if(route==='verify'&&response.status===200){
+   if((route==='verify'||route==='access')&&response.status===200){
     response.body.token=response.body.resumed?body.resumeToken:responseToken;delete response.body.resumed;
    }
    return json(response.body,response.status);

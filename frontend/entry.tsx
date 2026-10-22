@@ -1,21 +1,23 @@
 import {createRoot} from 'react-dom/client';
 import {useEffect,useState} from 'react';
 import Experience from '../app/v2-experience';
-import {sharedResultId} from '../lib/client-runtime';
+import TokenAdmin from '../app/token-admin';
+import {sharedResultId,currentRoute,isAdminRoute} from '../lib/client-runtime';
 import '../app/design.css';
 import '../app/v2.css';
 import '../app/master-results.css';
 import '../app/playful.css';
+import '../app/token-admin.css';
 
 function StandaloneApp() {
-  const [id,setId]=useState(sharedResultId());
+  const [route,setRoute]=useState(currentRoute());
   useEffect(()=>{
-    const update=()=>setId(sharedResultId());
+    const update=()=>setRoute(currentRoute());
     window.addEventListener('hashchange',update);
     window.addEventListener('popstate',update);
     return()=>{window.removeEventListener('hashchange',update);window.removeEventListener('popstate',update);};
   },[]);
-  return <Experience key={id||'home'} shared={Boolean(id)}/>;
+  return isAdminRoute()?<TokenAdmin/>:<Experience key={route} shared={Boolean(sharedResultId())}/>;
 }
 
 createRoot(document.getElementById('root')!).render(<StandaloneApp/>);

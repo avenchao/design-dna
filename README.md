@@ -2,7 +2,7 @@
 
 AI时代，你是哪种设计幸存者？10道题、8种设计精神状态、主/隐藏大师、1080×1920分享卡。
 
-前端：GitHub Pages。后端：Supabase Edge Function。数据：Supabase PostgreSQL。网站访问无需账号，测试使用独立测评密码。
+前端：GitHub Pages。后端：Supabase Edge Function。数据：Supabase PostgreSQL。网站访问无需账号，测试使用购买后获得的唯一访问链接。
 
 ## 本地开发
 
@@ -14,11 +14,15 @@ PAGES_BASE_PATH 是部署路径；VITE_SUPABASE_API_URL 是公开的后端地址
 
 ## 发布
 
-GitHub 仓库变量 VITE_SUPABASE_API_URL 保存公开 Edge Function URL。main 分支通过 GitHub Actions 构建并发布 GitHub Pages。分享链接使用 #/result/ID，刷新不会产生静态托管的404。
+GitHub 仓库变量 VITE_SUPABASE_API_URL 保存公开 Edge Function URL。main 分支通过 GitHub Actions 构建并发布 GitHub Pages。购买入口使用 /play/TOKEN，结果使用 /result/ID，兼容旧版哈希链接。GitHub Pages 通过自定义404页面加载这些动态路径。
 
-Supabase: 设置 ALLOWED_ORIGINS 和 IP_HASH_SALT；supabase db push 应用结构；supabase functions deploy design-dna --no-verify-jwt --use-api 发布。网关JWT关闭是因为本产品使用测评密码与随机会话令牌授权；所有表在私有schema，启用RLS，匿名用户不能直接访问，数据库RPC仅服务端角色可执行。
+Supabase: 设置 ALLOWED_ORIGINS 和 IP_HASH_SALT；supabase db push 应用结构；supabase functions deploy design-dna --no-verify-jwt --use-api 发布。网关JWT关闭是因为本产品使用购买Token与随机会话令牌授权；所有表在私有schema，启用RLS，匿名用户不能直接访问，数据库RPC仅服务端角色可执行。
 
-## 新增测评密码
+## 唯一卡券后台
+
+访问 /admin/，使用独立管理密钥登录。可生成100/500/1000个Token、按五种状态筛选、停用和恢复、导出UTF-8 CSV。DNA_ADMIN_KEY_HASH只保存在Supabase服务器环境中。每个购买Token有130位随机性；打开入口只创建授权grant，点击开始才原子创建Session并扣次。Session凭证与购买Token分离。
+
+## 旧版测评密码
 
 运行 node scripts/generate-supabase-codes.mjs 20。它将明文密码和数据库导入SQL写入忽略的 outputs/。在本项目的Supabase SQL Editor执行SQL即可启用，不必重新发布前端。每个密码最多开测3次。不要把这两个文件放进仓库或网页。
 
