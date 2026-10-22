@@ -14,7 +14,7 @@ PAGES_BASE_PATH 是部署路径；VITE_SUPABASE_API_URL 是公开的后端地址
 
 ## 发布
 
-GitHub 仓库变量 VITE_SUPABASE_API_URL 保存公开 Edge Function URL。main 分支通过 GitHub Actions 构建并发布 GitHub Pages。购买入口使用 /play/TOKEN，结果使用 /result/ID，兼容旧版哈希链接。GitHub Pages 通过自定义404页面加载这些动态路径。
+GitHub 仓库变量 VITE_SUPABASE_API_URL 保存公开 Edge Function URL。main 分支通过 GitHub Actions 构建并发布 GitHub Pages。导出发货入口使用 /play/?token=TOKEN，结果分享使用 /result/?id=ID，均由静态目录返回HTTP 200。同时兼容 /play/TOKEN、/result/ID 和旧版哈希链接。GitHub Pages 通过自定义404页面加载旧动态路径。
 
 Supabase: 设置 ALLOWED_ORIGINS 和 IP_HASH_SALT；supabase db push 应用结构；supabase functions deploy design-dna --no-verify-jwt --use-api 发布。网关JWT关闭是因为本产品使用购买Token与随机会话令牌授权；所有表在私有schema，启用RLS，匿名用户不能直接访问，数据库RPC仅服务端角色可执行。
 

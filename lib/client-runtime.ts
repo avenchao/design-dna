@@ -28,6 +28,7 @@ export function redirectToCanonical() {
 
 export function resultHref(id: string, legacy = false) {
   const route = `${legacy ? 'r' : 'result'}/${encodeURIComponent(id)}`;
+  if(usesStaticRouting())return legacy?`${homeHref()}#/${route}`:`${homeHref()}result/?id=${encodeURIComponent(id)}`;
   return `${homeHref()}${route}`;
 }
 
@@ -36,7 +37,9 @@ export function resultUrl(id: string, legacy = false) {
 }
 
 export function sharedResultId() {
-  return currentRoute().match(/^\/(?:result|r)\/([a-f0-9-]{36})\/?$/)?.[1] || '';
+  const route=currentRoute();
+  const id=route.match(/^\/(?:result|r)\/([a-f0-9-]{36})\/?$/)?.[1]||(/^\/result\/?$/.test(route)?new URLSearchParams(window.location.search).get('id'):'')||'';
+  return /^[a-f0-9-]{36}$/.test(id)?id:'';
 }
 
 export function currentRoute() {
@@ -45,8 +48,8 @@ export function currentRoute() {
   const base=homeHref().replace(/\/$/,'');
   return window.location.pathname.startsWith(base+'/')?window.location.pathname.slice(base.length):window.location.pathname;
 }
-export function accessTokenFromLocation(){return currentRoute().match(/^\/play\/([^/]+)\/?$/)?.[1]||'';}
-export function accessHref(token:string){return `${homeHref()}play/${encodeURIComponent(token)}`;}
+export function accessTokenFromLocation(){const route=currentRoute();return route.match(/^\/play\/([^/]+)\/?$/)?.[1]||(/^\/play\/?$/.test(route)?new URLSearchParams(window.location.search).get('token'):'')||'';}
+export function accessHref(token:string){return usesStaticRouting()?`${homeHref()}play/?token=${encodeURIComponent(token)}`:`${homeHref()}play/${encodeURIComponent(token)}`;}
 export function isAdminRoute(){return /^\/admin\/?$/.test(currentRoute());}
 
 export function requestApi(path: string, data?: unknown) {

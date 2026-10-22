@@ -10,9 +10,9 @@ import '../app/playful.css';
 import '../app/token-admin.css';
 
 function StandaloneApp() {
-  const [route,setRoute]=useState(currentRoute());
+  const [route,setRoute]=useState(()=>currentRoute()+window.location.search);
   useEffect(()=>{
-    const update=()=>setRoute(currentRoute());
+    const update=()=>setRoute(currentRoute()+window.location.search);
     window.addEventListener('hashchange',update);
     window.addEventListener('popstate',update);
     return()=>{window.removeEventListener('hashchange',update);window.removeEventListener('popstate',update);};

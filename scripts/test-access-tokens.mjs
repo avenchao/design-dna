@@ -7,7 +7,7 @@ for(const file of ['_shared/model','_shared/scoring','design-dna/handler','desig
 fs.copyFileSync('lib/v2/frozen-content.json',`${root}/_shared/frozen-content.json`);
 const {createHandler}=await import(pathToFileURL(path.resolve(`${root}/design-dna/handler.js`)));
 const db=new PGlite();await db.exec('create role anon;create role authenticated;create role service_role;');
-for(const file of ['202610200001_design_dna.sql','202610220008_access_links.sql'])await db.exec(fs.readFileSync('supabase/migrations/'+file,'utf8'));
+for(const file of ['202610200001_design_dna.sql','202610220008_access_links.sql','202610230009_pages_delivery_urls.sql'])await db.exec(fs.readFileSync('supabase/migrations/'+file,'utf8'));
 const sha=value=>crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)).then(b=>Buffer.from(b).toString('hex'));
 const adminKey='SYNTHETIC-ADMIN-KEY-ONLY-FOR-TESTING';const origin='https://avenchao.github.io',base='https://test.supabase.co/functions/v1/design-dna';
 const handler=createHandler({origins:[origin],ipSalt:'test-salt',adminKeyHash:await sha(adminKey),rpc:async(action,payload,ip)=>{
