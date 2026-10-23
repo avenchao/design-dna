@@ -29,6 +29,13 @@
 .dna-app .illustrated-options .illustrated-option>.option-letter{position:absolute;z-index:1;top:8px;left:8px;background:var(--letter-bg);color:#252521;display:grid;place-items:center;width:42px;height:44px;border-radius:1px 3px 2px 1px;transform:rotate(-3deg);font-family:'Segoe Print','Comic Sans MS',cursive;font-size:29px;font-weight:700;line-height:1;white-space:normal;pointer-events:none}
 .option-illustration{display:block;width:100%;aspect-ratio:4/3;background:#f5f0e5}
 .option-illustration img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain}
+.quiz-illustration-media{position:relative;display:block;width:100%;aspect-ratio:4/3;overflow:hidden}
+.quiz-illustration-media>img{visibility:hidden}
+.quiz-illustration-media.is-loaded>img{visibility:visible}
+.quiz-image-status{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:16px;color:#777366;font-size:12px;line-height:1.6;text-align:center;background:#f5f0e5}
+.has-image-error .quiz-image-status{color:#6a5147}
+.illustration-retry{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12px;color:#6a5147}
+.illustration-retry>button{border:1px solid #b8ac96;background:#faf7ee;border-radius:5px;padding:7px 12px;font:inherit}
 .dna-app .illustrated-option>.answer-copy{display:block;font-size:15px;line-height:1.65;text-align:left;white-space:pre-line;padding:15px 18px 18px;flex:1;border-top:1px solid #d8cfbf}
 .dna-app .illustrated-option>.answer-check{position:absolute;right:10px;top:10px;display:grid;place-items:center;width:27px;height:27px;color:#24251e;background:transparent;border-radius:50%}
 .dna-app .illustrated-option.chosen>.answer-check{background:#fffdf4;box-shadow:0 0 0 1px var(--option-border)}

@@ -1,8 +1,13 @@
 import {homeHref} from '../client-runtime';
 
 export type IllustrationSlot='main'|'a'|'b'|'c'|'d';
+const imageCdn='https://gqdtqyrfainiljdszznb.supabase.co/storage/v1/object/public/dna-quiz-illustrations/v3-20261024';
+export function questionIllustrationSources(id:string,slot:IllustrationSlot){
+ const name=`${id.toLowerCase()}-${slot}`;
+ return [`${imageCdn}/${name}.jpg`,`${homeHref()}illustrations/${name}.jpg`,`${homeHref()}illustrations/${name}.webp`];
+}
 export function questionIllustration(id:string,slot:IllustrationSlot){
- return `${homeHref()}illustrations/${id.toLowerCase()}-${slot}.webp`;
+ return questionIllustrationSources(id,slot)[0];
 }
 export const illustrationSlots:IllustrationSlot[]=['main','a','b','c','d'];
 export const sceneDescriptions:Record<string,string>={
