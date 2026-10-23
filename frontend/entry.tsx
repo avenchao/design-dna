@@ -8,6 +8,7 @@ import '../app/v2.css';
 import '../app/master-results.css';
 import '../app/playful.css';
 import '../app/token-admin.css';
+import '../app/illustrated-quiz.css';
 
 function StandaloneApp() {
   const [route,setRoute]=useState(()=>currentRoute()+window.location.search);

@@ -1,7 +1,7 @@
 import {defineConfig,loadEnv} from 'vite';
 import react from '@vitejs/plugin-react';
 import {fileURLToPath} from 'node:url';
-import {copyFileSync,mkdirSync} from 'node:fs';
+import {copyFileSync,mkdirSync,existsSync} from 'node:fs';
 
 export default defineConfig(({mode})=>{
   const env=loadEnv(mode,process.cwd(),'');
@@ -13,6 +13,10 @@ export default defineConfig(({mode})=>{
     root:fileURLToPath(new URL('./frontend',import.meta.url)),
     envDir:process.cwd(),base,plugins:[react(),{name:'pages-deep-links',closeBundle(){
       const out=fileURLToPath(new URL('./dist-pages',import.meta.url));
+      for(let q=1;q<=10;q++)for(const slot of ['main','a','b','c','d']){
+        const file=`${out}/illustrations/q${String(q).padStart(2,'0')}-${slot}.webp`;
+        if(!existsSync(file))throw new Error('Required quiz illustration missing from build: '+file);
+      }
       copyFileSync(`${out}/index.html`,`${out}/404.html`);
       for(const route of ['play','admin','result']){mkdirSync(`${out}/${route}`,{recursive:true});copyFileSync(`${out}/index.html`,`${out}/${route}/index.html`);}
     }}],

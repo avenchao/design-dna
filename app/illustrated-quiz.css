@@ -1,0 +1,61 @@
+/* One coherent hand-drawn quiz, with every word kept as editable HTML. */
+.dna-app.is-illustrated-quiz{background:#f5f0e5;color:#22221f;--hairline:#d4cbbb;--soft:#777366;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif}
+.dna-app.is-illustrated-quiz .dna-header{background:transparent;max-width:1080px;height:70px}
+.is-illustrated-quiz .dna-brand{color:#22221f}
+.is-illustrated-quiz .wordmark-dot{background:#d57e8c}
+.is-illustrated-quiz .question-count{color:#292823;font-weight:700}
+.dna-app .illustrated-questions{max-width:1040px;padding:0 32px 42px}
+.is-illustrated-quiz .quiz-progress{height:3px;background:#ded6c6;border-radius:40%}
+.is-illustrated-quiz .quiz-progress>span{background:#d68b9a;transform:rotate(-.15deg)}
+.illustrated-questions .question-inner{padding-top:27px}
+.illustrated-heading{display:flex;align-items:center;gap:20px;margin-bottom:23px}
+.dna-app .illustrated-heading .question-sticker{display:block;flex:none;background:#252521;color:#faf6ed;transform:rotate(-3deg);border-radius:1px 3px 1px 4px;font-family:'Kaiti SC','STKaiti','KaiTi',serif;letter-spacing:-2px;font-size:29px;padding:7px 14px;margin:0;line-height:1.2}
+.dna-app .illustrated-heading h1{font-family:'Kaiti SC','STKaiti','KaiTi','Microsoft YaHei',sans-serif;font-size:35px;font-weight:700;line-height:1.35;letter-spacing:.5px;position:relative;text-wrap:pretty}
+.illustrated-heading h1::after{content:'';position:absolute;bottom:-9px;left:0;width:clamp(90px,55%,310px);height:4px;background:#df93a2;border-radius:40%;transform:rotate(-1deg);opacity:.8}
+.question-story{display:grid;grid-template-columns:.85fr 1.5fr;gap:25px;align-items:center;border-bottom:1px solid #d8cfbf;padding-bottom:25px}
+.dna-app .question-story .scenario{margin:0;color:#615c53;font-size:15px;line-height:1.8}
+.dna-app .question-story .scenario p{line-height:1.65!important;margin:3px 0}
+.dna-app .question-story .scenario p:last-child{color:#282721;font-weight:650;margin-top:14px}
+.question-illustration{margin:0;border:1px solid #c9c1b1;border-radius:3px 5px 2px 4px;overflow:hidden;background:#f5f0e5;aspect-ratio:4/3;min-width:0}
+.question-illustration img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain}
+.dna-app .illustrated-options{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:25px;align-items:stretch}
+.dna-app .illustrated-option{position:relative;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;min-width:0;overflow:hidden;padding:0;border:1px solid #c9c1b1;border-radius:3px 6px 2px 4px;background:#faf7ee;box-shadow:none;transition:border-color .2s,background .2s,box-shadow .2s}
+.dna-app .illustrated-option:nth-child(1){--option-bg:#f6e0e5;--option-border:#d08a99;--letter-bg:#e6a4b4}
+.dna-app .illustrated-option:nth-child(2){--option-bg:#f8eacb;--option-border:#c5a75b;--letter-bg:#e7c071}
+.dna-app .illustrated-option:nth-child(3){--option-bg:#dde8f0;--option-border:#87a9c1;--letter-bg:#94b4cf}
+.dna-app .illustrated-option:nth-child(4){--option-bg:#e4e9d5;--option-border:#91a26f;--letter-bg:#adc28f}
+.dna-app .illustrated-option:hover{border-color:var(--option-border);background:#faf7ee;box-shadow:0 2px 0 #28272116}
+.dna-app .illustrated-option.chosen{border:2px solid var(--option-border);background:var(--option-bg);box-shadow:0 3px 0 color-mix(in srgb,var(--option-border) 35%,transparent)}
+.dna-app .illustrated-options .illustrated-option>.option-letter{position:absolute;z-index:1;top:8px;left:8px;background:var(--letter-bg);color:#252521;display:grid;place-items:center;width:42px;height:44px;border-radius:1px 3px 2px 1px;transform:rotate(-3deg);font-family:'Segoe Print','Comic Sans MS',cursive;font-size:29px;font-weight:700;line-height:1;white-space:normal;pointer-events:none}
+.option-illustration{display:block;width:100%;aspect-ratio:4/3;background:#f5f0e5}
+.option-illustration img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain}
+.dna-app .illustrated-option>.answer-copy{display:block;font-size:15px;line-height:1.65;text-align:left;white-space:pre-line;padding:15px 18px 18px;flex:1;border-top:1px solid #d8cfbf}
+.dna-app .illustrated-option>.answer-check{position:absolute;right:10px;top:10px;display:grid;place-items:center;width:27px;height:27px;color:#24251e;background:transparent;border-radius:50%}
+.dna-app .illustrated-option.chosen>.answer-check{background:#fffdf4;box-shadow:0 0 0 1px var(--option-border)}
+.is-illustrated-quiz .quiz-bottom{margin-top:21px}
+.is-illustrated-quiz .quiz-bottom>span{color:#7a7468}
+.is-illustrated-quiz .quiet-link{color:#635f54}
+.is-illustrated-quiz .icon-button:hover{background:#e9e2d4}
+.is-illustrated-quiz :focus-visible{outline-color:#8c7c60}
+@media(max-width:767px){
+ .dna-app.is-illustrated-quiz .dna-header{height:61px;padding:0 18px}
+ .dna-app .illustrated-questions{padding:0 18px calc(30px + env(safe-area-inset-bottom,0px))}
+ .illustrated-questions .question-inner{padding-top:23px}
+ .illustrated-heading{align-items:flex-start;gap:12px;margin-bottom:22px}
+ .dna-app .illustrated-heading .question-sticker{font-size:22px;padding:6px 9px;letter-spacing:-1px;line-height:1.2;margin-top:2px}
+ .dna-app .illustrated-heading h1{font-size:26px;line-height:1.35;letter-spacing:0}
+ .illustrated-heading h1::after{height:3px;bottom:-6px}
+ .question-story{display:flex;flex-direction:column;gap:15px;padding-bottom:19px;align-items:stretch}
+ .dna-app .question-story .scenario{font-size:14px}
+ .dna-app .question-story .scenario p{line-height:1.55!important;margin:2px 0}
+ .dna-app .question-story .scenario p:last-child{margin-top:10px}
+ .question-illustration{width:100%;border-color:#cfc5b5}
+ .dna-app .illustrated-options{gap:12px 11px;margin-top:19px}
+ .dna-app .illustrated-option{border-radius:2px 4px 2px 3px}
+ .dna-app .illustrated-options .illustrated-option>.option-letter{width:31px;height:33px;left:6px;top:6px;font-size:23px}
+ .dna-app .illustrated-option>.answer-copy{font-size:14px;line-height:1.55;padding:11px 10px 13px}
+ .dna-app .illustrated-option>.answer-check{top:6px;right:6px;width:23px;height:23px}
+ .dna-app .illustrated-option>.answer-check svg{width:15px;height:15px}
+ .is-illustrated-quiz .quiz-bottom{margin-top:18px}
+}
+@media(max-width:359px){.dna-app .illustrated-heading h1{font-size:23px}.dna-app .illustrated-options{gap:11px 9px}.dna-app .illustrated-option>.answer-copy{font-size:13px;padding:10px 8px 12px}.dna-app .illustrated-questions{padding-left:15px;padding-right:15px}}
