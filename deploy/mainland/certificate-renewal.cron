@@ -1,0 +1,3 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+17 3 * * * root /usr/local/sbin/design-dna-cert-renew >> /var/log/design-dna-cert-renew.log 2>&1

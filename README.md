@@ -2,7 +2,7 @@
 
 AI时代，你是哪种设计幸存者？10道题、8种设计精神状态、主/隐藏大师、1080×1920分享卡。题目使用统一角色的彩铅手绘插画：10张主场景、40张独立图片选项，手机两列排列。
 
-前端：GitHub Pages。后端：Supabase Edge Function。数据：Supabase PostgreSQL。网站访问无需账号，测试使用购买后获得的唯一访问链接。
+正式站点：https://dna.avenchao.top 。前端和图片：阿里云中国大陆服务器。后端：通过同域API转发至Supabase Edge Function。数据：保留原Supabase PostgreSQL。GitHub Pages作为兼容入口继续保留。网站访问无需账号，测试使用购买后获得的唯一访问链接。
 
 ## 本地开发
 
@@ -14,7 +14,7 @@ PAGES_BASE_PATH 是部署路径；VITE_SUPABASE_API_URL 是公开的后端地址
 
 ## 发布
 
-GitHub 仓库变量 VITE_SUPABASE_API_URL 保存公开 Edge Function URL。main 分支通过 GitHub Actions 构建并发布 GitHub Pages。导出发货入口使用 /play/?token=TOKEN，结果分享使用 /result/?id=ID，均由静态目录返回HTTP 200。同时兼容 /play/TOKEN、/result/ID 和旧版哈希链接。GitHub Pages 通过自定义404页面加载旧动态路径。
+GitHub 仓库变量 VITE_SUPABASE_API_URL 保存公开 Edge Function URL。main 分支通过 GitHub Actions 构建并发布 GitHub Pages。正式站点发货入口使用 /play/TOKEN，结果分享使用 /result/ID。GitHub Pages兼容入口继续支持 /play/?token=TOKEN 和 /result/?id=ID。同时兼容 /play/TOKEN、/result/ID 和旧版哈希链接。GitHub Pages 通过自定义404页面加载旧动态路径。
 
 Supabase: 设置 ALLOWED_ORIGINS 和 IP_HASH_SALT；supabase db push 应用结构；supabase functions deploy design-dna --no-verify-jwt --use-api 发布。网关JWT关闭是因为本产品使用购买Token与随机会话令牌授权；所有表在私有schema，启用RLS，匿名用户不能直接访问，数据库RPC仅服务端角色可执行。
 
@@ -35,3 +35,7 @@ Supabase: 设置 ALLOWED_ORIGINS 和 IP_HASH_SALT；supabase db push 应用结�
 ## 免费版说明
 
 本项目当前使用Supabase免费版，持续低活跃可能导致项目暂停，需要在控制台恢复。说明：https://supabase.com/docs/guides/platform/free-project-pausing 。没有开通付费订阅或自动保活任务。
+
+## 大陆部署维护
+
+见 deploy/mainland/README.md。构建命令 npm run build:mainland；备案号陇ICP备2026010657号。数据库、已有Token和使用次数均保留。证书每日自动检查续期。
