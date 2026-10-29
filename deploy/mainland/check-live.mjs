@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+const origin='https://dna.avenchao.top';
+const checks=[];
+async function get(url,options={}){const start=performance.now();const r=await fetch(url,{redirect:'manual',...options,signal:AbortSignal.timeout(30000)});return {r,ms:Math.round(performance.now()-start)};}
+const redirect=await get('http://dna.avenchao.top/play/TEST?probe=1');assert.ok([301,302,307,308].includes(redirect.r.status));assert.equal(redirect.r.headers.get('location'),'https://dna.avenchao.top/play/TEST?probe=1');checks.push({type:'http-to-https',status:redirect.r.status,ms:redirect.ms});
+for(const path of ['/','/play/ABCDEFGHJKLMNPQRSTUVWXYZ23','/result/00000000-0000-4000-8000-000000000001','/admin/']){const {r,ms}=await get(origin+path);assert.equal(r.status,200);const html=await r.text();assert.ok(html.includes('陇ICP备2026010657号'));assert.ok(html.includes('https://beian.miit.gov.cn/'));assert.ok(html.includes('name="dna-api" content="/api"'));assert.ok(html.includes('name="dna-routing" content="path"'));checks.push({type:'page',path,status:r.status,ms});}
+const paths=[];for(let q=1;q<=10;q++)for(const slot of ['main','a','b','c','d'])for(const ext of ['jpg','webp'])paths.push(`/illustrations/q${String(q).padStart(2,'0')}-${slot}.${ext}`);
+for(let start=0;start<paths.length;start+=5){const results=await Promise.allSettled(paths.slice(start,start+5).map(async path=>{const {r,ms}=await get(origin+path);assert.equal(r.status,200);assert.equal(r.headers.get('content-type')?.split(';')[0],path.endsWith('.jpg')?'image/jpeg':'image/webp');const bytes=new Uint8Array(await r.arrayBuffer());assert.ok(bytes.length>5000);checks.push({type:'image',path,status:r.status,bytes:bytes.length,ms});}));for(const result of results)if(result.status==='rejected')throw result.reason;}
+const {r,ms}=await get(origin+'/api/access',{method:'POST',headers:{'content-type':'application/json',origin},body:JSON.stringify({accessToken:'INVALID'})});assert.equal(r.status,401);assert.match((await r.json()).error,/测试入口/);checks.push({type:'token-api-without-starting-session',status:r.status,ms});
+const result={checkedAt:new Date().toISOString(),probeLocation:process.env.DNA_PROBE_LOCATION||'未标注位置，不能据此认定大陆网络测试通过',origin,checks};
+await fs.writeFile('design-dna-live-checks.json',JSON.stringify(result,null,2));console.log(`PASS: HTTPS, HTTP redirect, 4 pages, 100 images and same-origin Token validation. Probe location: ${result.probeLocation}. No test Session started.`);

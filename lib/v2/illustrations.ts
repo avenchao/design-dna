@@ -4,6 +4,7 @@ export type IllustrationSlot='main'|'a'|'b'|'c'|'d';
 const imageCdn='https://gqdtqyrfainiljdszznb.supabase.co/storage/v1/object/public/dna-quiz-illustrations/v3-20261024';
 export function questionIllustrationSources(id:string,slot:IllustrationSlot){
  const name=`${id.toLowerCase()}-${slot}`;
+ if(typeof document!=='undefined'&&document.querySelector<HTMLMetaElement>('meta[name="dna-images"]')?.content==='local')return [`${homeHref()}illustrations/${name}.jpg`,`${homeHref()}illustrations/${name}.webp`,`${imageCdn}/${name}.jpg`];
  return [`${imageCdn}/${name}.jpg`,`${homeHref()}illustrations/${name}.jpg`,`${homeHref()}illustrations/${name}.webp`];
 }
 export function questionIllustration(id:string,slot:IllustrationSlot){

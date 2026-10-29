@@ -47,6 +47,18 @@ try{
  const csvResponse=await req('admin/export',{batchId:batches[0]},adminKey);assert.equal(csvResponse.status,200);assert.match(csvResponse.headers.get('content-type'),/text\/csv/);const csvBuffer=Buffer.from(await csvResponse.arrayBuffer());assert.equal(csvBuffer.subarray(0,3).toString('hex'),'efbbbf');const csv=csvBuffer.toString('utf8');assert.equal(csv.trim().split('\r\n').length,101);assert.ok(csv.includes('token,access_url,max_starts,used_starts,status,created_at'));assert.ok(csv.includes('https://avenchao.github.io/design-dna/play/'));assert.ok(!csv.includes(adminKey));
  assert.equal((await admin('list',{search:entry.slice(0,20)})).body.total,1);
  await db.exec('set role anon');for(const table of ['access_codes','access_grants','sessions'])await assert.rejects(()=>db.query(`select * from dna_private.${table}`),/permission denied/);await assert.rejects(()=>db.query("select public.dna_api('admin_list','{}',null)"),/permission denied/);await assert.rejects(()=>db.query("select public.dna_api_legacy('result','{}',null)"),/permission denied/);await db.exec('reset role');
- const audit={syntheticDataOnly:true,batchSizes:[100,500,1000],unpredictableBits:130,landingCreatesNoSession:true,quotaAtomic:true,retryIdempotent:true,batchRetryIdempotent:true,resumeAfterExhaustion:true,crossTokenIsolation:true,disabledAndRestored:true,fiveStatusFilters:true,csvUtf8Bom:true,publicResultsExcludeToken:true,anonymousDbDenied:true};
+ const fingerprint=async()=>{const checks={};for(const table of ['access_codes','access_grants','sessions','results'])checks[table]=(await db.query(`select md5(coalesce(string_agg(to_jsonb(t)::text,'' order by to_jsonb(t)::text),'')) h from dna_private.${table} t`)).rows[0].h;return checks;};
+ const beforeDomain=await fingerprint();
+ await db.exec(fs.readFileSync('supabase/migrations/202610290010_configurable_access_urls.sql','utf8'));
+ assert.ok((await admin('list',{batchId:batches[0]})).body.items.every(x=>x.access_url===`https://avenchao.github.io/design-dna/play/?token=${x.token}`));
+ await db.exec(fs.readFileSync('deploy/mainland/activate-domain.sql','utf8'));
+ assert.ok((await admin('list',{batchId:batches[0]})).body.items.every(x=>x.access_url===`https://dna.avenchao.top/play/${x.token}`));
+ const mainlandCsv=await(await req('admin/export',{batchId:batches[0]},adminKey)).text();assert.ok(mainlandCsv.includes('https://dna.avenchao.top/play/'));assert.ok(!mainlandCsv.includes('play/?token='));
+ assert.deepEqual(await fingerprint(),beforeDomain,'domain cutover preserves all codes, grants, sessions, results and usage');
+ assert.equal((await post('start',{token:after.body.token})).status,409,'domain cutover does not reset exhausted qualification');
+ await db.exec(fs.readFileSync('deploy/mainland/rollback-domain.sql','utf8'));
+ assert.ok((await admin('list',{batchId:batches[0]})).body.items.every(x=>x.access_url===`https://avenchao.github.io/design-dna/play/?token=${x.token}`));
+ assert.deepEqual(await fingerprint(),beforeDomain,'domain rollback preserves all test data');
+ const audit={syntheticDataOnly:true,batchSizes:[100,500,1000],unpredictableBits:130,landingCreatesNoSession:true,quotaAtomic:true,retryIdempotent:true,batchRetryIdempotent:true,resumeAfterExhaustion:true,crossTokenIsolation:true,disabledAndRestored:true,fiveStatusFilters:true,csvUtf8Bom:true,publicResultsExcludeToken:true,anonymousDbDenied:true,domainCutoverPreservesAllData:true,domainRollbackPreservesAllData:true,mainlandPrettyUrls:true};
  fs.mkdirSync('outputs/token-migration',{recursive:true});fs.writeFileSync('outputs/token-migration/backend-tests.json',JSON.stringify(audit,null,2));console.log('PASS: Token batches 100/500/1000, 130-bit randomness, atomic 3-start quota, idempotent retries, resume, isolation, five states, disable/restore, UTF-8 CSV, result privacy and admin authentication.');
 }finally{await db.close();}
